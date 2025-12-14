@@ -106,18 +106,30 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * The main composable for the sales screen.
+ *
+ * This screen serves as the entry point for all sales-related functionality. It displays
+ * sales statistics, a list of past sales, and provides access to various dialogs for
+ * creating and managing clients and sales. It observes the [SaleState] from the [SaleViewModel]
+ * to render the UI accordingly.
+ *
+ * @param viewModel The [SaleViewModel] instance provided by Koin, responsible for business logic.
+ * @param onBack Callback function to be invoked when the user navigates back.
+ */
 @Composable
 fun SaleScreen(viewModel: SaleViewModel = koinViewModel(), onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Scaffold { paddingValues ->
+    Scaffold {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(it)
                 .systemBarsPadding()
                 .padding(16.dp)
         ) {
+            // region Dialogs
             AlertDialogClient(
                 displayClient = state.displayClient,
                 viewModel = viewModel,
@@ -157,6 +169,8 @@ fun SaleScreen(viewModel: SaleViewModel = koinViewModel(), onBack: () -> Unit) {
                     icon = Res.drawable.delete
                 )
             }
+            // endregion
+
             AccountCard(viewModel, state, onBack)
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -169,34 +183,37 @@ fun SaleScreen(viewModel: SaleViewModel = koinViewModel(), onBack: () -> Unit) {
     }
 }
 
+/**
+ * A card composable that displays sales revenue statistics and primary actions.
+ *
+ * Shows the module title, a back button, and a button to initiate a new sale.
+ * It also displays a summary of revenue for the day, week, month, year, and all time.
+ *
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] to display data from.
+ * @param onBack Callback to execute when the back button is pressed.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountCard(viewModel: SaleViewModel, state: SaleState, onBack: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.medium
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = { onBack() },
-                        content = {
-                            Icon(
-                                painter = painterResource(Res.drawable.arrow_back),
-                                contentDescription = stringResource(Res.string.arrow_back),
-                            )
-                        }
-                    )
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.arrow_back),
+                            contentDescription = stringResource(Res.string.arrow_back)
+                        )
+                    }
                     Text(
                         text = stringResource(Res.string.sale_module),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -205,14 +222,10 @@ fun AccountCard(viewModel: SaleViewModel, state: SaleState, onBack: () -> Unit) 
                 }
                 Button(
                     onClick = { viewModel.onEvent(SaleEvent.OnDisplayClient) },
-                    colors = ButtonDefaults.buttonColors(),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     shape = MaterialTheme.shapes.small
                 ) {
-                    Text(
-                        text = stringResource(Res.string.new_sale),
-                        fontSize = 12.sp
-                    )
+                    Text(text = stringResource(Res.string.new_sale), fontSize = 12.sp)
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -220,122 +233,62 @@ fun AccountCard(viewModel: SaleViewModel, state: SaleState, onBack: () -> Unit) 
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                // Revenue display columns
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(Res.string.revenue),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = stringResource(Res.string.of_the_day),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = state.saleToday.toStringRounded(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    )
+                    Text(text = stringResource(Res.string.revenue), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = stringResource(Res.string.of_the_day), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = state.saleToday.toStringRounded(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(Res.string.revenue),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = stringResource(Res.string.of_the_week),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = state.saleWeek.toStringRounded(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    )
+                    Text(text = stringResource(Res.string.revenue), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = stringResource(Res.string.of_the_week), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = state.saleWeek.toStringRounded(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(Res.string.revenue),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = stringResource(Res.string.of_the_month),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = state.saleMonth.toStringRounded(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    )
+                    Text(text = stringResource(Res.string.revenue), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = stringResource(Res.string.of_the_month), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = state.saleMonth.toStringRounded(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(Res.string.revenue),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = stringResource(Res.string.of_the_year),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = state.saleYear.toStringRounded(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    )
+                    Text(text = stringResource(Res.string.revenue), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = stringResource(Res.string.of_the_year), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = state.saleYear.toStringRounded(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(Res.string.revenue),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = stringResource(Res.string.total),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = state.saleEver.toStringRounded(),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    )
+                    Text(text = stringResource(Res.string.revenue), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = stringResource(Res.string.total), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(text = state.saleEver.toStringRounded(), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                 }
             }
         }
     }
 }
 
+/**
+ * Displays a table of past sales transactions.
+ *
+ * @param sales The list of [Sale] objects to display.
+ * @param modifier The modifier to be applied to the component.
+ * @param onItemSelected Callback invoked when a sale row is clicked.
+ */
 @Composable
-fun TransactionsTable(
-    sales: List<Sale>,
-    modifier: Modifier = Modifier,
-    onItemSelected: (Sale) -> Unit
-) {
+fun TransactionsTable(sales: List<Sale>, modifier: Modifier = Modifier, onItemSelected: (Sale) -> Unit) {
     Card(
-        modifier = modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(),
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.medium
     ) {
         Column {
             TransactionTableHeader()
             HorizontalDivider(thickness = 1.dp)
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 itemsIndexed(sales) { index, sale ->
-                    TransactionRow(
-                        index = index,
-                        sale = sale,
-                        onItemSelected = { onItemSelected(it) })
+                    TransactionRow(index = index, sale = sale, onItemSelected = onItemSelected)
                     if (index < sales.lastIndex) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            thickness = 1.dp
-                        )
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 1.dp)
                     }
                 }
             }
@@ -343,101 +296,59 @@ fun TransactionsTable(
     }
 }
 
+/**
+ * Displays the header row for the transactions table.
+ */
 @Composable
 fun TransactionTableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 12.dp
-            ),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "#",
-            modifier = Modifier.weight(0.1f),
-            fontWeight = FontWeight.Bold,
-            fontSize = 12.sp,
-            color = Color.Gray
-        )
-        Text(
-            text = stringResource(Res.string.client).uppercase(),
-            modifier = Modifier.weight(0.3f),
-            fontWeight = FontWeight.Bold,
-            fontSize = 12.sp,
-            color = Color.Gray
-        )
-        Text(
-            text = stringResource(Res.string.price).uppercase(),
-            modifier = Modifier.weight(0.25f),
-            fontWeight = FontWeight.Bold,
-            fontSize = 12.sp,
-            color = Color.Gray
-        )
-        Text(
-            text = stringResource(Res.string.date).uppercase(),
-            modifier = Modifier.weight(0.25f),
-            fontWeight = FontWeight.Bold,
-            fontSize = 12.sp,
-            color = Color.Gray
-        )
+        Text(text = "#", modifier = Modifier.weight(0.1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
+        Text(text = stringResource(Res.string.client).uppercase(), modifier = Modifier.weight(0.3f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
+        Text(text = stringResource(Res.string.price).uppercase(), modifier = Modifier.weight(0.25f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
+        Text(text = stringResource(Res.string.date).uppercase(), modifier = Modifier.weight(0.25f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Gray)
         Spacer(modifier = Modifier.width(20.dp))
     }
 }
 
+/**
+ * Displays a single row in the transactions table.
+ *
+ * @param index The index of the row.
+ * @param sale The [Sale] data for the row.
+ * @param onItemSelected Callback invoked when the row is clicked.
+ */
 @Composable
-fun TransactionRow(
-    index: Int,
-    sale: Sale,
-    onItemSelected: (Sale) -> Unit
-) {
+fun TransactionRow(index: Int, sale: Sale, onItemSelected: (Sale) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 10.dp
-            ),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = (index + 1).toString(),
-            modifier = Modifier.weight(0.1f),
-            fontSize = 13.sp
-        )
-        Text(
-            text = sale.client.name,
-            modifier = Modifier.weight(0.3f),
-            fontSize = 13.sp
-        )
-        Text(
-            text = sale.totalPrice,
-            modifier = Modifier.weight(0.25f),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Text(
-            text = sale.createDate.convertDateTimeFormat(),
-            modifier = Modifier.weight(0.25f),
-            fontSize = 13.sp
-        )
-        IconButton(
-            onClick = { onItemSelected(sale) },
-            content = {
-                Icon(
-                    painter = painterResource(Res.drawable.show),
-                    contentDescription = "Details",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        )
+        Text(text = (index + 1).toString(), modifier = Modifier.weight(0.1f), fontSize = 13.sp)
+        Text(text = sale.client.name, modifier = Modifier.weight(0.3f), fontSize = 13.sp)
+        Text(text = sale.totalPrice, modifier = Modifier.weight(0.25f), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+        Text(text = sale.createDate.convertDateTimeFormat(), modifier = Modifier.weight(0.25f), fontSize = 13.sp)
+        IconButton(onClick = { onItemSelected(sale) }) {
+            Icon(painter = painterResource(Res.drawable.show), contentDescription = "Details", tint = Color.Gray, modifier = Modifier.size(20.dp))
+        }
     }
 }
 
+/**
+ * A dialog that displays a list of clients to choose from.
+ *
+ * @param displayClient Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] containing client data.
+ */
 @Composable
 fun AlertDialogClient(displayClient: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displayClient) {
@@ -462,6 +373,13 @@ fun AlertDialogClient(displayClient: Boolean, viewModel: SaleViewModel, state: S
     }
 }
 
+/**
+ * A dialog for adding a new client or editing an existing one.
+ *
+ * @param displayAddClient Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] to pre-fill the form.
+ */
 @Composable
 fun AlertDialogAddClient(displayAddClient: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displayAddClient) {
@@ -479,6 +397,13 @@ fun AlertDialogAddClient(displayAddClient: Boolean, viewModel: SaleViewModel, st
     }
 }
 
+/**
+ * A confirmation dialog for deleting a client.
+ *
+ * @param displayDeleteClient Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send the delete confirmation event to.
+ * @param state The current [SaleState] containing the client to be deleted.
+ */
 @Composable
 fun DialogDeleteClient(displayDeleteClient: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displayDeleteClient) {
@@ -492,6 +417,13 @@ fun DialogDeleteClient(displayDeleteClient: Boolean, viewModel: SaleViewModel, s
     }
 }
 
+/**
+ * A dialog for creating a new sale or editing an existing one.
+ *
+ * @param displaySale Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] to pre-fill the form.
+ */
 @Composable
 fun AlertDialogSale(displaySale: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displaySale) {
@@ -509,6 +441,13 @@ fun AlertDialogSale(displaySale: Boolean, viewModel: SaleViewModel, state: SaleS
     }
 }
 
+/**
+ * A dialog that displays the line items of the current sale in a table.
+ *
+ * @param displaySaleLine Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] containing the sale line items.
+ */
 @Composable
 fun AlertDialogSaleLine(displaySaleLine: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displaySaleLine) {
@@ -531,36 +470,11 @@ fun AlertDialogSaleLine(displaySaleLine: Boolean, viewModel: SaleViewModel, stat
 
                 val saleLinesColumnContents: List<@Composable (index: Int, item: SaleLine) -> Unit> =
                     listOf(
-                        { index, _ ->
-                            Text(
-                                text = (index + 1).toString(),
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        { _, item ->
-                            Text(
-                                text = item.productName,
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        { _, item ->
-                            Text(
-                                text = item.productStock.toStringRounded(),
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        { _, item ->
-                            Text(
-                                text = item.singlePrice.toStringRounded(),
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        { _, item ->
-                            Text(
-                                text = item.totalPrice.toStringRounded(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        { index, _ -> Text(text = (index + 1).toString(), textAlign = TextAlign.Center) },
+                        { _, item -> Text(text = item.productName, textAlign = TextAlign.Center) },
+                        { _, item -> Text(text = item.productStock.toStringRounded(), textAlign = TextAlign.Center) },
+                        { _, item -> Text(text = item.singlePrice.toStringRounded(), textAlign = TextAlign.Center) },
+                        { _, item -> Text(text = item.totalPrice.toStringRounded(), textAlign = TextAlign.Center) }
                     )
                 SimpleTable(
                     headers = headersSaleLines,
@@ -585,6 +499,13 @@ fun AlertDialogSaleLine(displaySaleLine: Boolean, viewModel: SaleViewModel, stat
     }
 }
 
+/**
+ * A dialog that shows the complete details of a selected past sale.
+ *
+ * @param displaySaleLine Controls the visibility of the dialog.
+ * @param viewModel The [SaleViewModel] to send events to.
+ * @param state The current [SaleState] containing the selected sale.
+ */
 @Composable
 fun AlertDialogSaleDetail(displaySaleLine: Boolean, viewModel: SaleViewModel, state: SaleState) {
     AnimatedVisibility(displaySaleLine) {
@@ -600,81 +521,64 @@ fun AlertDialogSaleDetail(displaySaleLine: Boolean, viewModel: SaleViewModel, st
                     sale = state.saleSelected,
                     onDelete = { viewModel.onEvent(SaleEvent.OnDisplayDelete) },
                     onUpdate = { sale ->
-                        viewModel.onEvent(
-                            SaleEvent.OnDisplaySale(
-                                client = sale.client,
-                                sale = sale
-                            )
-                        )
-                    })
+                        viewModel.onEvent(SaleEvent.OnDisplaySale(client = sale.client, sale = sale))
+                    }
+                )
             }
         }
     }
 }
 
+/**
+ * The content composable for displaying the details of a single sale.
+ *
+ * Shows client info, creation date, action buttons (Update/Delete), and a table of sale line items.
+ *
+ * @param sale The [Sale] object whose details are to be displayed.
+ * @param onDelete Callback for when the delete button is clicked.
+ * @param onUpdate Callback for when the update button is clicked.
+ */
 @Composable
 fun SaleDetail(sale: Sale, onDelete: () -> Unit, onUpdate: (Sale) -> Unit) {
     Column {
+        // Client and Date info
         Row(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.weight(1f)) {
                 Row {
-                    Text(
-                        text = stringResource(Res.string.client) + ": ",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text(text = stringResource(Res.string.client) + ": ", fontWeight = FontWeight.Bold)
                     Text(text = sale.client.name)
                 }
             }
             Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
                 Row {
-                    Text(
-                        text = stringResource(Res.string.identity_card) + ": ",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text(text = stringResource(Res.string.identity_card) + ": ", fontWeight = FontWeight.Bold)
                     Text(text = sale.client.identityCard)
                 }
             }
         }
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Box(modifier = Modifier.weight(1f)) {
+            Row {
+                Text(text = stringResource(Res.string.create) + ": ", fontWeight = FontWeight.Bold)
+                Text(text = sale.createDate)
+            }
+        }
+        // Action Buttons
+        Row(modifier = Modifier.padding(16.dp)) {
+            Button(modifier = Modifier.weight(1F), onClick = { onUpdate(sale) }) {
                 Row {
-                    Text(
-                        text = stringResource(Res.string.create) + ": ",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = sale.createDate)
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "")
+                    Text(text = stringResource(Res.string.update))
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            OutlinedButton(modifier = Modifier.weight(1F), onClick = { onDelete() }) {
+                Row {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "")
+                    Text(text = stringResource(Res.string.delete))
                 }
             }
         }
-        Row(modifier = Modifier.padding(16.dp)) {
-            Button(
-                modifier = Modifier.weight(1F),
-                onClick = { onUpdate(sale) },
-                content = {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = ""
-                        )
-                        Text(text = stringResource(Res.string.update))
-                    }
-                }
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            OutlinedButton(
-                modifier = Modifier.weight(1F),
-                onClick = { onDelete() },
-                content = {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = ""
-                        )
-                        Text(text = stringResource(Res.string.delete))
-                    }
-                }
-            )
-        }
+        // Sale Lines Table
         val headersSaleLines = listOf(
             "#",
             stringResource(Res.string.name),
@@ -685,42 +589,16 @@ fun SaleDetail(sale: Sale, onDelete: () -> Unit, onUpdate: (Sale) -> Unit) {
 
         val saleLinesColumnContents: List<@Composable (index: Int, item: SaleLine) -> Unit> =
             listOf(
-                { index, _ ->
-                    Text(
-                        text = (index + 1).toString(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                { _, item ->
-                    Text(
-                        text = item.productName,
-                        textAlign = TextAlign.Center
-                    )
-                },
-                { _, item ->
-                    Text(
-                        text = item.productStock.toStringRounded(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                { _, item ->
-                    Text(
-                        text = item.singlePrice.toStringRounded(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                { _, item ->
-                    Text(
-                        text = item.totalPrice.toStringRounded(),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                { index, _ -> Text(text = (index + 1).toString(), textAlign = TextAlign.Center) },
+                { _, item -> Text(text = item.productName, textAlign = TextAlign.Center) },
+                { _, item -> Text(text = item.productStock.toStringRounded(), textAlign = TextAlign.Center) },
+                { _, item -> Text(text = item.singlePrice.toStringRounded(), textAlign = TextAlign.Center) },
+                { _, item -> Text(text = item.totalPrice.toStringRounded(), textAlign = TextAlign.Center) }
             )
         SimpleTable(
             headers = headersSaleLines,
             data = sale.lines,
             columnContents = saleLinesColumnContents,
-            onDeleteItem = { },
             showDeleteButton = false,
             showTotalRow = true,
             totalRowContent = {
@@ -737,6 +615,15 @@ fun SaleDetail(sale: Sale, onDelete: () -> Unit, onUpdate: (Sale) -> Unit) {
     }
 }
 
+/**
+ * A form for creating or updating a sale.
+ *
+ * This form includes fields for selecting a client, adding products with quantities, and setting
+ * the total price. It handles focus management and input validation.
+ *
+ * @param viewModel The [SaleViewModel] to send user events to.
+ * @param state The current [SaleState] to populate the form and show validation errors.
+ */
 @Composable
 fun FromSale(viewModel: SaleViewModel, state: SaleState) {
     val (item1, item2) = remember { FocusRequester.createRefs() }
@@ -751,53 +638,35 @@ fun FromSale(viewModel: SaleViewModel, state: SaleState) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(end = 50.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            IconButton(
-                onClick = { viewModel.onEvent(SaleEvent.OnDismissSale) },
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.error),
-                    contentDescription = stringResource(Res.string.close)
-                )
+        // Close Button and Title
+        Box(modifier = Modifier.fillMaxWidth().padding(end = 50.dp), contentAlignment = Alignment.CenterEnd) {
+            IconButton(onClick = { viewModel.onEvent(SaleEvent.OnDismissSale) }) {
+                Icon(painter = painterResource(Res.drawable.error), contentDescription = stringResource(Res.string.close))
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (state.sale.id == 0) {
-                stringResource(Res.string.create_sale)
-            } else {
-                stringResource(Res.string.update_sale)
-            },
+            text = if (state.sale.id == 0) stringResource(Res.string.create_sale) else stringResource(Res.string.update_sale),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Client Selection
         OutlinedButton(
-            modifier = Modifier.height(ButtonDefaults.MinHeight)
-                .width(OutlinedTextFieldDefaults.MinWidth),
+            modifier = Modifier.height(ButtonDefaults.MinHeight).width(OutlinedTextFieldDefaults.MinWidth),
             onClick = { viewModel.onEvent(SaleEvent.OnChangeClient) }
         ) {
-            Text(
-                text = state.client.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-            )
-            Text(
-                text = " (${state.client.identityCard.formatNumberInt()})",
-                fontSize = 12.sp,
-            )
+            Text(text = state.client.name, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(text = " (${state.client.identityCard.formatNumberInt()})", fontSize = 12.sp)
         }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
-        Row(
-            modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
+        // Product Selection and Quantity
+        Row(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth), verticalAlignment = Alignment.CenterVertically) {
             AutoCompleteGeneric(
                 modifier = Modifier.weight(1f),
                 items = state.products,
@@ -808,20 +677,11 @@ fun FromSale(viewModel: SaleViewModel, state: SaleState) {
                 searchText = state.searchProduct,
                 onValueChange = { viewModel.onEvent(SaleEvent.OnSearchItem(it)) }
             )
-            IconButton(
-                onClick = { viewModel.onEvent(SaleEvent.OnDisplaySaleLines) },
-                content = {
-                    Icon(
-                        painter = painterResource(Res.drawable.show),
-                        contentDescription = stringResource(Res.string.show)
-                    )
-                }
-            )
+            IconButton(onClick = { viewModel.onEvent(SaleEvent.OnDisplaySaleLines) }) {
+                Icon(painter = painterResource(Res.drawable.show), contentDescription = stringResource(Res.string.show))
+            }
         }
-        Row(
-            modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = state.productQuantity,
                 onValueChange = { viewModel.onEvent(SaleEvent.OnChanceQuantityProduct(it)) },
@@ -831,18 +691,13 @@ fun FromSale(viewModel: SaleViewModel, state: SaleState) {
                     .focusRequester(item1)
                     .focusProperties { next = item2 }
                     .onFocusChanged {
-                        if (it.isFocused) {
-                            isQuantityTouched.value = true
-                        } else if (isQuantityTouched.value) {
-                            viewModel.onEvent(SaleEvent.OnValidateQuantityProduct)
-                        }
+                        if (it.isFocused) isQuantityTouched.value = true
+                        else if (isQuantityTouched.value) viewModel.onEvent(SaleEvent.OnValidateQuantityProduct)
                     },
                 isError = isQuantityTouched.value && state.errorQuantity != null,
                 supportingText = {
                     if (isQuantityTouched.value) {
-                        state.errorQuantity?.let { errorRes ->
-                            Text(text = stringResource(errorRes))
-                        }
+                        state.errorQuantity?.let { Text(text = stringResource(it)) }
                     }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -860,111 +715,74 @@ fun FromSale(viewModel: SaleViewModel, state: SaleState) {
             )
             IconButton(
                 onClick = { viewModel.onEvent(SaleEvent.OnAddList) },
-                content = {
-                    Icon(
-                        painter = painterResource(Res.drawable.add),
-                        contentDescription = stringResource(Res.string.add)
-                    )
-                },
+                content = { Icon(painter = painterResource(Res.drawable.add), contentDescription = stringResource(Res.string.add)) },
                 enabled = state.product.id != 0 && state.errorQuantity == null
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
-        Row(
-            modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
+        // Total Price
+        Row(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = state.sale.totalPrice,
                 onValueChange = { viewModel.onEvent(SaleEvent.OnPriceChance(it)) },
-                label = {
-                    Text(text = stringResource(Res.string.price))
-                },
+                label = { Text(text = stringResource(Res.string.price)) },
                 singleLine = true,
                 modifier = Modifier.weight(1f)
                     .focusRequester(item2)
                     .focusProperties { previous = item1 }
                     .onFocusChanged {
-                        if (it.isFocused) {
-                            isPriceTouched.value = true
-                        } else if (isPriceTouched.value) {
-                            viewModel.onEvent(SaleEvent.OnValidatePriceSale)
-                        }
+                        if (it.isFocused) isPriceTouched.value = true
+                        else if (isPriceTouched.value) viewModel.onEvent(SaleEvent.OnValidatePriceSale)
                     },
                 enabled = state.enableEditPrice,
                 isError = isPriceTouched.value && state.errorPrice != null,
                 supportingText = {
                     if (isPriceTouched.value) {
-                        state.errorPrice?.let { errorRes ->
-                            Text(text = stringResource(errorRes))
-                        }
+                        state.errorPrice?.let { Text(text = stringResource(it)) }
                     }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    if (state.sale.id == 0) {
-                        viewModel.onEvent(SaleEvent.OnSumit)
-                    } else {
-                        viewModel.onEvent(SaleEvent.OnUpdate(state.sale))
-                    }
+                    if (state.sale.id == 0) viewModel.onEvent(SaleEvent.OnSumit) else viewModel.onEvent(SaleEvent.OnUpdate(state.sale))
                 })
             )
-            Checkbox(
-                checked = state.enableEditPrice,
-                onCheckedChange = { viewModel.onEvent(SaleEvent.OnChangeEnablePrice(it)) }
-            )
+            Checkbox(checked = state.enableEditPrice, onCheckedChange = { viewModel.onEvent(SaleEvent.OnChangeEnablePrice(it)) })
         }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Submit Button
         Button(
-            modifier = Modifier.height(ButtonDefaults.MinHeight)
-                .width(OutlinedTextFieldDefaults.MinWidth),
+            modifier = Modifier.height(ButtonDefaults.MinHeight).width(OutlinedTextFieldDefaults.MinWidth),
             onClick = {
-                if (state.sale.id == 0) {
-                    viewModel.onEvent(SaleEvent.OnSumit)
-                } else {
-                    viewModel.onEvent(SaleEvent.OnUpdate(state.sale))
-                }
+                if (state.sale.id == 0) viewModel.onEvent(SaleEvent.OnSumit) else viewModel.onEvent(SaleEvent.OnUpdate(state.sale))
             },
             enabled = !state.inputErrorSale && state.inputsFillSale,
-            content = {
-                when {
-                    state.isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
-                    }
-
-                    state.isError -> {
-                        Icon(
-                            painter = painterResource(Res.drawable.error),
-                            contentDescription = stringResource(Res.string.error),
-                        )
-                    }
-
-                    state.isSuccess -> {
-                        Icon(
-                            painter = painterResource(Res.drawable.success),
-                            contentDescription = stringResource(Res.string.success),
-                        )
-                    }
-
-                    else -> {
-                        if (state.sale.id == 0) {
-                            Text(text = stringResource(Res.string.create))
-                        } else {
-                            Text(text = stringResource(Res.string.update))
-                        }
-                    }
-                }
+        ) {
+            when {
+                state.isLoading -> CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                state.isError -> Icon(painter = painterResource(Res.drawable.error), contentDescription = stringResource(Res.string.error))
+                state.isSuccess -> Icon(painter = painterResource(Res.drawable.success), contentDescription = stringResource(Res.string.success))
+                else -> Text(text = if (state.sale.id == 0) stringResource(Res.string.create) else stringResource(Res.string.update))
             }
-        )
+        }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
+/**
+ * A form for creating or updating a client.
+ *
+ * Contains fields for client identity card and name, handling focus management and input validation.
+ *
+ * @param viewModel The [SaleViewModel] to send user events to.
+ * @param state The current [SaleState] to populate the form and show validation errors.
+ */
 @Composable
 fun FromClient(viewModel: SaleViewModel, state: SaleState) {
     val (item1, item2) = remember { FocusRequester.createRefs() }
@@ -979,44 +797,31 @@ fun FromClient(viewModel: SaleViewModel, state: SaleState) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(end = 50.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            IconButton(
-                onClick = { viewModel.onEvent(SaleEvent.OnDismissAddClient) },
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.error),
-                    contentDescription = stringResource(Res.string.close)
-                )
+        // Close Button and Title
+        Box(modifier = Modifier.fillMaxWidth().padding(end = 50.dp), contentAlignment = Alignment.CenterEnd) {
+            IconButton(onClick = { viewModel.onEvent(SaleEvent.OnDismissAddClient) }) {
+                Icon(painter = painterResource(Res.drawable.error), contentDescription = stringResource(Res.string.close))
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (state.client.id == 0) {
-                stringResource(Res.string.create_client)
-            } else {
-                stringResource(Res.string.update_client)
-            },
+            text = if (state.client.id == 0) stringResource(Res.string.create_client) else stringResource(Res.string.update_client),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Input Fields
         OutlinedTextField(
             value = state.client.identityCard,
             onValueChange = { viewModel.onEvent(SaleEvent.OnIdentityCardClientChance(it)) },
-            label = {
-                Text(text = stringResource(Res.string.identity_card))
-            },
+            label = { Text(text = stringResource(Res.string.identity_card)) },
             isError = isIdentityCardTouched.value && state.errorIdentityCard != null,
             supportingText = {
                 if (isIdentityCardTouched.value) {
-                    state.errorIdentityCard?.let { errorRes ->
-                        Text(text = stringResource(errorRes))
-                    }
+                    state.errorIdentityCard?.let { Text(text = stringResource(it)) }
                 }
             },
             singleLine = true,
@@ -1024,11 +829,8 @@ fun FromClient(viewModel: SaleViewModel, state: SaleState) {
                 .focusRequester(item1)
                 .focusProperties { next = item2 }
                 .onFocusChanged {
-                    if (it.isFocused) {
-                        isIdentityCardTouched.value = true
-                    } else if (isIdentityCardTouched.value) {
-                        viewModel.onEvent(SaleEvent.OnValidateIdentityCardClient)
-                    }
+                    if (it.isFocused) isIdentityCardTouched.value = true
+                    else if (isIdentityCardTouched.value) viewModel.onEvent(SaleEvent.OnValidateIdentityCardClient)
                 },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { item2.requestFocus() })
@@ -1036,15 +838,11 @@ fun FromClient(viewModel: SaleViewModel, state: SaleState) {
         OutlinedTextField(
             value = state.client.name,
             onValueChange = { viewModel.onEvent(SaleEvent.OnNameCLientChance(it)) },
-            label = {
-                Text(text = stringResource(Res.string.name))
-            },
+            label = { Text(text = stringResource(Res.string.name)) },
             isError = isNameTouched.value && state.errorName != null,
             supportingText = {
                 if (isNameTouched.value) {
-                    state.errorName?.let { errorRes ->
-                        Text(text = stringResource(errorRes))
-                    }
+                    state.errorName?.let { Text(text = stringResource(it)) }
                 }
             },
             singleLine = true,
@@ -1052,66 +850,34 @@ fun FromClient(viewModel: SaleViewModel, state: SaleState) {
                 .focusRequester(item2)
                 .focusProperties { previous = item1 }
                 .onFocusChanged {
-                    if (it.isFocused) {
-                        isNameTouched.value = true
-                    } else if (isNameTouched.value) {
-                        viewModel.onEvent(SaleEvent.OnValidateNameClient)
-                    }
+                    if (it.isFocused) isNameTouched.value = true
+                    else if (isNameTouched.value) viewModel.onEvent(SaleEvent.OnValidateNameClient)
                 },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
                 focusManager.clearFocus()
-                if (state.client.id == 0) {
-                    viewModel.onEvent(SaleEvent.OnSumitClient)
-                } else {
-                    viewModel.onEvent(SaleEvent.OnUpdateClient(state.client))
-                }
+                if (state.client.id == 0) viewModel.onEvent(SaleEvent.OnSumitClient) else viewModel.onEvent(SaleEvent.OnUpdateClient(state.client))
             })
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(modifier = Modifier.width(OutlinedTextFieldDefaults.MinWidth))
+
+        // Submit Button
         Button(
-            modifier = Modifier.height(ButtonDefaults.MinHeight)
-                .width(OutlinedTextFieldDefaults.MinWidth),
+            modifier = Modifier.height(ButtonDefaults.MinHeight).width(OutlinedTextFieldDefaults.MinWidth),
             onClick = {
-                if (state.client.id == 0) {
-                    viewModel.onEvent(SaleEvent.OnSumitClient)
-                } else {
-                    viewModel.onEvent(SaleEvent.OnUpdateClient(state.client))
-                }
+                if (state.client.id == 0) viewModel.onEvent(SaleEvent.OnSumitClient) else viewModel.onEvent(SaleEvent.OnUpdateClient(state.client))
             },
-            enabled = !state.inputError && state.inputsFill,
-            content = {
-                when {
-                    state.isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
-                    }
-
-                    state.isError -> {
-                        Icon(
-                            painter = painterResource(Res.drawable.error),
-                            contentDescription = stringResource(Res.string.error),
-                        )
-                    }
-
-                    state.isSuccess -> {
-                        Icon(
-                            painter = painterResource(Res.drawable.success),
-                            contentDescription = stringResource(Res.string.success),
-                        )
-                    }
-
-                    else -> {
-                        if (state.client.id == 0) {
-                            Text(text = stringResource(Res.string.create))
-                        } else {
-                            Text(text = stringResource(Res.string.update))
-                        }
-                    }
-                }
+            enabled = !state.inputError && state.inputsFill
+        ) {
+            when {
+                state.isLoading -> CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                state.isError -> Icon(painter = painterResource(Res.drawable.error), contentDescription = stringResource(Res.string.error))
+                state.isSuccess -> Icon(painter = painterResource(Res.drawable.success), contentDescription = stringResource(Res.string.success))
+                else -> Text(text = if (state.client.id == 0) stringResource(Res.string.create) else stringResource(Res.string.update))
             }
-        )
+        }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }

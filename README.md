@@ -1,11 +1,16 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop.
+# Herargos Administrativo
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+Herargos Administrativo is a cross-platform desktop application built with Compose Multiplatform, designed for business management.
 
+## Features
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+*   **Ingredient Management:** Create, view, update, and delete ingredients.
+*   **Product Management:** Create, view, update, and delete products.
+*   **Recipe Management:** Assign recipes to products to control inventory.
+
+## Technologies Used
+
+*   [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform)
+*   [Kotlin](https://kotlinlang.org/)
+*   [Koin](https://insert-koin.io/) for dependency injection.
+*   [SQLDelight](https://github.com/cashapp/sqldelight) for the local database.

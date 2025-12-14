@@ -20,11 +20,22 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 
+/**
+ * Main composable representing the root of the application.
+ *
+ * It configures the application's theme, a base Scaffold with a Snackbar to display global
+ * messages, and the container for the application's navigation.
+ *
+ * @param messages Instance of [Messages] injected by Koin, used to listen for and display
+ * messages (Snackbars) throughout the application.
+ */
 @Composable
 fun App(messages: Messages = koinInject()) {
     AppTheme {
         val scope = rememberCoroutineScope()
         val snackBarHostState = remember { SnackbarHostState() }
+
+        // Observes the message flow and displays them in a Snackbar.
         ObserveAsEvents(
             flow = messages.messages,
         ) { msg ->
@@ -34,6 +45,7 @@ fun App(messages: Messages = koinInject()) {
                 )
             }
         }
+
         Scaffold(
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
             snackbarHost = {
@@ -43,6 +55,7 @@ fun App(messages: Messages = koinInject()) {
             }
         ) { innerPadding ->
             Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                // The NavigationWrapper component manages the different screens of the app.
                 NavigationWrapper()
             }
         }

@@ -30,7 +30,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
+/**
+ * ViewModel for the Sales screen, responsible for managing the UI state and handling business logic.
+ *
+ * This ViewModel interacts with various repositories to fetch and manipulate sales, client, and product data.
+ * It uses a [CreateSaleUseCase] for more complex operations like creating a sale, which might involve
+ * multiple steps or repositories. It communicates with the UI through a [StateFlow] of [SaleState]
+ * and handles user actions via the [onEvent] method. It also uses a [Messages] utility to show
+ * global messages like Snackbars to the user.
+ *
+ * @param clientRepository Repository for client-related data operations.
+ * @param productRepository Repository for product-related data operations.
+ * @param saleRepository Repository for sale-related data operations.
+ * @param createSaleUseCase Use case for creating a new sale.
+ * @param messages Utility for sending messages to be displayed in the UI.
+ */
 class SaleViewModel(
     private val clientRepository: ClientRepository,
     private val productRepository: ProductRepository,
@@ -39,6 +53,9 @@ class SaleViewModel(
     private val messages: Messages
 ) : ViewModel() {
     private val _state: MutableStateFlow<SaleState> = MutableStateFlow(SaleState())
+    /**
+     * The read-only [StateFlow] of the [SaleState] which the UI observes for state changes.
+     */
     val state: StateFlow<SaleState> = _state
 
     init {
@@ -52,6 +69,9 @@ class SaleViewModel(
         getSaleEver()
     }
 
+    /**
+     * Fetches the total sales amount for all time.
+     */
     private fun getSaleEver() {
         viewModelScope.launch {
             saleRepository.getTotalSalesAbsolute().collect { result ->
@@ -85,6 +105,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the total sales amount for the current year.
+     */
     private fun getSaleYear() {
         viewModelScope.launch {
             saleRepository.getTotalSalesThisYear().collect { result ->
@@ -118,6 +141,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the total sales amount for the current month.
+     */
     private fun getSaleMonth() {
         viewModelScope.launch {
             saleRepository.getTotalSalesThisMonth().collect { result ->
@@ -151,6 +177,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the total sales amount for the current week.
+     */
     private fun getSaleWeek() {
         viewModelScope.launch {
             saleRepository.getTotalSalesThisWeek().collect { result ->
@@ -184,6 +213,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the total sales amount for today.
+     */
     private fun getSaleToday() {
         viewModelScope.launch {
             saleRepository.getTotalSalesToday().collect { result ->
@@ -217,6 +249,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches a list of all sales and updates the state.
+     */
     private fun getSales() {
         viewModelScope.launch {
             saleRepository.getSales().collect { result ->
@@ -250,6 +285,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the list of products, filtering out those already added to the current sale.
+     */
     private fun getProducts() {
         viewModelScope.launch {
             productRepository.getProducts().collect { result ->
@@ -286,6 +324,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Fetches the list of all clients.
+     */
     private fun getClients() {
         viewModelScope.launch {
             clientRepository.getClients().collect { result ->
@@ -319,6 +360,14 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Central entry point for all user interactions from the Sales UI.
+     *
+     * This function receives a [SaleEvent] and delegates the handling to the corresponding
+     * private function within the ViewModel.
+     *
+     * @param event The user action event from the UI.
+     */
     fun onEvent(event: SaleEvent) {
         when (event) {
             SaleEvent.OnDisplayClient -> displayClient()
@@ -359,6 +408,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Updates an existing sale with the current data from the state.
+     */
     private fun updateSale(sale: Sale) {
         viewModelScope.launch {
             _state.update { state ->
@@ -370,7 +422,7 @@ class SaleViewModel(
                 )
                 state.copy(sale = newSale)
             }
-            when (val result = createSaleUseCase(sale)/*saleRepository.updateSale(_state.value.sale)*/) {
+            when (val result = createSaleUseCase(sale)) {
                 is RequestState.Error -> {
                     _state.update { state ->
                         state.copy(
@@ -409,18 +461,27 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Shows the delete confirmation dialog for a sale.
+     */
     private fun displayDeleteSale() {
         _state.update { state ->
             state.copy(displaySaleDelete = true)
         }
     }
 
+    /**
+     * Hides the delete confirmation dialog for a sale.
+     */
     private fun dismissDeleteSale() {
         _state.update { state ->
             state.copy(displaySaleDelete = false)
         }
     }
 
+    /**
+     * Deletes a given sale.
+     */
     private fun deleteSale(sale: Sale) {
         viewModelScope.launch {
             when (val result = saleRepository.deleteSale(sale)) {
@@ -446,12 +507,18 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Hides the sale detail view.
+     */
     private fun dimissSaleDetail() {
         _state.update { state ->
             state.copy(displaySaleDetail = false, sale = Sale())
         }
     }
 
+    /**
+     * Fetches and displays the details for a specific sale.
+     */
     private fun displaySaleDetail(sale: Sale) {
         viewModelScope.launch {
             saleRepository.getSale(sale.id).collect { result ->
@@ -476,6 +543,9 @@ class SaleViewModel(
         getProducts()
     }
 
+    /**
+     * Creates a new sale using the data from the current state.
+     */
     private fun insertSale() {
         viewModelScope.launch {
             _state.update { state ->
@@ -486,7 +556,7 @@ class SaleViewModel(
                 )
                 state.copy(sale = newSale)
             }
-            when (val result = createSaleUseCase(_state.value.sale) /*saleRepository.createSale(_state.value.sale)*/) {
+            when (val result = createSaleUseCase(_state.value.sale)) {
                 is RequestState.Error -> {
                     _state.update { state ->
                         state.copy(
@@ -525,6 +595,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Removes a specific item from the current sale's line items.
+     */
     private fun deleteItem(item: SaleLine) {
         _state.update { state ->
             val updatedLines = state.sale.lines.toMutableList()
@@ -536,6 +609,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Hides the sale lines editor dialog.
+     */
     private fun dimissSaleLines() {
         _state.update { state ->
             state.copy(
@@ -544,6 +620,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Shows the sale lines editor dialog.
+     */
     private fun displaySaleLines() {
         _state.update { state ->
             state.copy(
@@ -552,6 +631,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Checks if all necessary inputs for a sale are filled and updates the state.
+     */
     private fun allInputsFillSale() {
         if (_state.value.sale.lines.isNotEmpty() &&
             _state.value.sale.totalPrice.isNotEmpty()
@@ -570,9 +652,11 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Toggles whether the total price of a sale can be edited manually.
+     */
     private fun changeEnablePrice(value: Boolean) {
         _state.update { state ->
-            //state.copy(enableEditPrice = value)
             val price = if (value) 0.0 else state.sale.lines.sumOf { it.totalPrice }
             val newSale = state.sale.copy(totalPrice = price.toString())
             state.copy(
@@ -583,6 +667,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Adds the currently selected product to the sale's line items.
+     */
     private fun addList() {
         val newList = _state.value.sale.lines.toMutableList()
         newList.add(
@@ -608,24 +695,36 @@ class SaleViewModel(
         allInputsFillSale()
     }
 
+    /**
+     * Updates the search text for products.
+     */
     private fun searchItem(text: String) {
         _state.update { state ->
             state.copy(searchProduct = text)
         }
     }
 
+    /**
+     * Sets the currently selected product in the state.
+     */
     private fun selectProduct(product: Product) {
         _state.update { state ->
             state.copy(product = product)
         }
     }
 
+    /**
+     * Navigates back to the client selection view from the sale creation view.
+     */
     private fun changeClient() {
         _state.update { state ->
             state.copy(displayClient = true, displaySale = false)
         }
     }
 
+    /**
+     * Displays the sale creation/editing view for a given client and sale.
+     */
     private fun displaySale(client: Client, sale: Sale) {
         _state.update { state ->
             state.copy(
@@ -637,12 +736,18 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Hides the sale creation/editing view.
+     */
     private fun dimissSale() {
         _state.update { state ->
             state.copy(displaySale = false)
         }
     }
 
+    /**
+     * Updates the search text for clients.
+     */
     private fun searchClient(text: String) {
         _state.update { state ->
             state.copy(
@@ -651,18 +756,27 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Shows the delete confirmation dialog for a specific client.
+     */
     private fun displayDeleteClient(client: Client) {
         _state.update { state ->
             state.copy(displayDeleteClient = true, client = client)
         }
     }
 
+    /**
+     * Hides the client delete confirmation dialog.
+     */
     private fun dismissDeleteClient() {
         _state.update { state ->
             state.copy(displayDeleteClient = false, client = Client())
         }
     }
 
+    /**
+     * Deletes a given client.
+     */
     private fun deleteClient(client: Client) {
         viewModelScope.launch {
             when (val result = clientRepository.deleteClient(client = client)) {
@@ -707,6 +821,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Updates a given client's information.
+     */
     private fun updateClient(client: Client) {
         viewModelScope.launch {
             when (val result = clientRepository.updateClient(client = client)) {
@@ -752,6 +869,9 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Submits the current client data to create a new client.
+     */
     private fun sumitCLient() {
         viewModelScope.launch {
             when (val result = clientRepository.createClient(client = _state.value.client)) {
@@ -797,30 +917,45 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Hides the add/edit client dialog.
+     */
     private fun dismissAddClient() {
         _state.update { state ->
             state.copy(displayAddClient = false)
         }
     }
 
+    /**
+     * Displays the add/edit client dialog, pre-filling it with the given client's data.
+     */
     private fun displayAddClient(client: Client) {
         _state.update { state ->
             state.copy(displayAddClient = true, client = client)
         }
     }
 
+    /**
+     * Hides the client selection list.
+     */
     private fun dismissClient() {
         _state.update { state ->
             state.copy(displayClient = false)
         }
     }
 
+    /**
+     * Shows the client selection list.
+     */
     private fun displayClient() {
         _state.update { state ->
             state.copy(displayClient = true)
         }
     }
 
+    /**
+     * Checks if all required input fields for a client are filled.
+     */
     private fun allInputsFill() {
         if (_state.value.client.name.isNotEmpty() &&
             _state.value.client.identityCard.isNotEmpty()
@@ -839,7 +974,10 @@ class SaleViewModel(
         }
     }
 
-    // Métodos de validación individuales
+
+    /**
+     * Validates the client's identity card number.
+     */
     private fun validateIdentityCardClient() {
         _state.update { state ->
             val error =
@@ -849,6 +987,9 @@ class SaleViewModel(
         updateInputError()
     }
 
+    /**
+     * Validates the client's name.
+     */
     private fun validateNameClient() {
         _state.update { state ->
             state.copy(errorName = state.client.name.isError())
@@ -856,6 +997,9 @@ class SaleViewModel(
         updateInputError()
     }
 
+    /**
+     * Validates the product quantity input field.
+     */
     private fun validateQuantityProduct() {
         _state.update { state ->
             val error = if (state.product.id == 0) {
@@ -868,6 +1012,9 @@ class SaleViewModel(
         updateInputError()
     }
 
+    /**
+     * Validates the sale's total price input field.
+     */
     private fun validatePriceSale() {
         _state.update { state ->
             val error = if (state.enableEditPrice) state.sale.totalPrice.isErrorDouble() else null
@@ -876,7 +1023,9 @@ class SaleViewModel(
         updateInputError()
     }
 
-    // Método para actualizar el estado de error general
+    /**
+     * Aggregates all individual validation errors into a single state flag.
+     */
     private fun updateInputError() {
         _state.update { state ->
             val allErrors = (state.errorIdentityCard != null) ||
@@ -887,18 +1036,27 @@ class SaleViewModel(
         }
     }
 
+    /**
+     * Updates the client's name in the state and triggers validation.
+     */
     private fun nameChange(text: String) {
         _state.update { it.copy(client = it.client.copy(name = text)) }
         validateNameClient()
         allInputsFill()
     }
 
+    /**
+     * Updates the client's identity card in the state and triggers validation.
+     */
     private fun identityChange(text: String) {
         _state.update { it.copy(client = it.client.copy(identityCard = text)) }
         validateIdentityCardClient()
         allInputsFill()
     }
 
+    /**
+     * Updates the product quantity in the state and triggers validation.
+     */
     private fun chanceQuantityProduct(text: String) {
         _state.update { state ->
             val price = try {
@@ -908,6 +1066,7 @@ class SaleViewModel(
                     ""
                 }
             } catch (e: NumberFormatException) {
+                e.printStackTrace()
                 ""
             }
             state.copy(
@@ -918,6 +1077,9 @@ class SaleViewModel(
         validateQuantityProduct()
     }
 
+    /**
+     * Updates the sale's total price in the state and triggers validation.
+     */
     private fun priceChance(text: String) {
         _state.update { state ->
             state.copy(sale = state.sale.copy(totalPrice = text))
