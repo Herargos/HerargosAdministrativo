@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: METADATOS Y GENERALES DE LA APLICACIÓN   * -->
+    <!-- ******************************************************************* -->
+    <!-- Nombre principal de la aplicación -->
+    <string name="name_app">Pan y Horegano</string>
+    <!-- Saludo genérico, útil para mensajes de bienvenida o pruebas -->
+    <string name="saludo">Hola</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: NAVEGACIÓN Y SECCIONES PRINCIPALES       * -->
+    <!-- ******************************************************************* -->
+    <!-- Nombres de las secciones principales de la aplicación o elementos de navegación -->
+    <string name="ingredient">Ingrediente</string>
+    <string name="recipe">Receta</string>
+    <string name="product">Artículos</string>
+    <string name="sales">Ventas</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: ACCIONES Y BOTONES COMUNES               * -->
+    <!-- ******************************************************************* -->
+    <!-- Acciones genéricas que se utilizan en múltiples pantallas o diálogos -->
+    <string name="add">Agregar</string>
+    <string name="create">Crear</string>
+    <string name="update">Actualizar</string>
+    <string name="delete">Borrar</string>
+    <string name="arrow_back">Atrás</string>
+    <string name="close">Cerrar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="search">Buscar</string>
+    <string name="more_options">Más Opciones</string>
+    <string name="details">Detalles</string>
+    <string name="show">Mostrar Icono</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: ETIQUETAS DE CAMPOS Y DATOS GENERALES    * -->
+    <!-- ******************************************************************* -->
+    <!-- Etiquetas para campos de entrada de texto, títulos de columnas, etc. -->
+    <string name="name">Nombre</string>
+    <string name="stock">Existencia</string>
+    <string name="quantity">Cantidad</string>
+    <string name="unit">Unidad</string>
+    <string name="price">Precio</string>
+    <string name="single_price">Precio Indiv.</string>
+    <string name="total_price">Precio Total</string>
+    <string name="total">Total</string>
+    <string name="ref">Ref</string>
+    <string name="date">Fecha</string>
+    <string name="client">Cliente</string>
+    <string name="clients">Clientes</string>
+    <string name="img">Imagen</string>
+    <string name="identity_card">Cédula</string>
+    <string name="enter_product">Introducir nombre de producto</string>
+    <string name="select_product">Seleccionar un Producto</string>
+    <string name="select_image">Selecciona una Imagen</string>
+
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: MENSAJES DE ESTADO                       * -->
+    <!-- ******************************************************************* -->
+    <!-- Mensajes genéricos de error, éxito o estados vacíos -->
+    <string name="unknown_error">Error Desconocido</string>
+    <string name="empty">Vacío</string>
+    <string name="error">Error</string>
+    <string name="success">Exitoso</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: ERRORES DE VALIDACIÓN                    * -->
+    <!-- ******************************************************************* -->
+    <!-- Sub-sección: Errores de validación para campos de texto -->
+    <string name="error_text_empty">El texto no puede estar vacío</string>
+    <string name="error_text_min_length">El texto debe tener al menos 3 caracteres</string>
+    <string name="error_text_max_length">El texto no puede exceder los 50 caracteres</string>
+    <string name="error_text_invalid_chars">El texto contiene caracteres no válidos</string>
+    <string name="error_text_forbidden_chars">El texto no puede contener caracteres especiales como !, @, #, etc.</string>
+
+    <!-- Sub-sección: Errores de validación para campos numéricos -->
+    <string name="error_num_empty">El número no puede estar vacío.</string>
+    <string name="error_num_invalid_format">Formato de número inválido.</string>
+    <string name="error_num_min_value_double">El número debe ser al menos: 0.01</string>
+    <string name="error_num_max_value_double">El número no puede exceder: 1000000.00</string>
+    <string name="error_num_min_value_int">El número debe ser al menos: 1000000</string>
+    <string name="error_num_max_value_int">El número no puede exceder: 10000000</string>
+    <string name="error_invalid_number_format">Debe ser un número válido, mayor o igual a 0.0, con un solo punto decimal y máximo 2 decimales.</string>
+    <string name="error_quantity_not_available">Cantidad no disponible</string>
+    <string name="insufficient_stock">Existencia insuficiente disponible para el producto.</string>
+    <string name="error_updating_product_stock">Ocurrió un error al actualizar la existencia del artículo.</string>
+
+    <!-- Sub-sección: Errores de validación para imagenes -->
+    <string name="unsupported_image_format">El formato de la imagen seleccionada no es compatible. Por favor, elige otra imagen.</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: MENSAJES ESPECÍFICOS POR MÓDULO/ENTIDAD  * -->
+    <!-- ******************************************************************* -->
+    <!-- Sub-sección: Mensajes relacionados con la entidad "Ingrediente" -->
+    <string name="not_selected_ingredient">Debe seleccionar un ingrediente</string>
+    <string name="create_ingredient">Crear Ingrediente</string>
+    <string name="unknown_error_create_ingredient">Error desconocido al crear el ingrediente.</string>
+    <string name="creation_ingredient_successful">La creación del ingrediente fue un éxito.</string>
+    <string name="update_ingredient">Actualizar Ingrediente</string>
+    <string name="update_ingredient_successful">La actualización del ingrediente fue un éxito.</string>
+    <string name="unknown_error_update_ingredient">Error desconocido al actualizar el ingrediente.</string>
+    <string name="delete_ingredient_successful">La eliminación del ingrediente fue un éxito.</string>
+    <string name="unknown_error_delete_ingredient">Error desconocido al eliminar el ingrediente.</string>
+
+    <!-- Sub-sección: Mensajes relacionados con la entidad "Producto" -->
+    <string name="not_selected_product">Debe seleccionar un articulo</string>
+    <string name="create_product">Crear producto</string>
+    <string name="unknown_error_create_product">Error desconocido al crear el producto.</string>
+    <string name="creation_product_successful">La creación del producto fue un éxito.</string>
+    <string name="update_product">Actualizar producto</string>
+    <string name="update_product_successful">La actualización del producto fue un éxito.</string>
+    <string name="unknown_error_update_product">Error desconocido al actualizar el producto.</string>
+    <string name="delete_product_successful">La eliminación del producto fue un éxito.</string>
+    <string name="unknown_error_delete_product">Error desconocido al eliminar el producto.</string>
+    <string name="unknown_error_updating_ingredients">Ocurrió un error desconocido al actualizar el stock de ingredientes.</string>
+    <string name="unknown_error_reverting_ingredients">Ocurrió un error desconocido al revertir el stock de ingredientes.</string>
+
+    <!-- Sub-sección: Mensajes relacionados con la entidad "Cliente" -->
+    <string name="create_sale">Crear Venta</string>
+    <string name="update_sale">Actualizar Venta</string>
+    <string name="unknown_error_create_sale">Error desconocido al crear el venta.</string>
+    <string name="creation_sale_successful">La creación del venta fue un éxito.</string>
+    <string name="unknown_error_delete_sale">Error desconocido al eliminar el venta.</string>
+    <string name="unknown_error_update_sale">Error desconocido al actualizar el venta.</string>
+    <string name="update_sale_successful">La actualización del venta fue un éxito.</string>
+
+    <!-- Sub-sección: Mensajes relacionados con el módulo de "Ventas" y "Finanzas" -->
+    <string name="new_sale">Nueva Venta</string>
+    <string name="sale_module">Módulo de Ventas</string>
+    <string name="revenue">Ganancias</string>
+    <string name="of_the_day">del Día</string>
+    <string name="of_the_week">de la Semana</string>
+    <string name="of_the_month">del Mes</string>
+    <string name="of_the_year">del Año</string>
+
+    <!-- ******************************************************************* -->
+    <!-- * SECCIÓN: DESCRIPCIONES Y TEXTOS INFORMATIVOS    * -->
+    <!-- ******************************************************************* -->
+    <!-- Descripciones de elementos, etiquetas de visualización de datos, etc. -->
+    <string name="show_name">Nombre: </string>
+    <string name="show_stock">Existencia: </string>
+    <string name="show_unit"> x </string>
+    <string name="show_price">Precio: </string>
+    <string name="alert_dialog_icon">Icono de la ventana emergente</string>
+    <string name="delete_item">Borrar Ítem</string>
+    <string name="delete_item_description_main">¿Estás seguro de que quieres borrar?</string>
+    <string name="delete_item_description">¿Estás seguro de que quieres borrar?: </string>
+
+</resources>

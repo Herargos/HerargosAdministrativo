@@ -1,0 +1,299 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "2e9757706eefa9b21d8e6e3524843e2a",
+    "entities": [
+      {
+        "tableName": "ClientEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `identityCard` TEXT NOT NULL, `name` TEXT NOT NULL, `isAlive` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "identityCard",
+            "columnName": "identityCard",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAlive",
+            "columnName": "isAlive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ClientEntity_identityCard",
+            "unique": true,
+            "columnNames": [
+              "identityCard"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ClientEntity_identityCard` ON `${TABLE_NAME}` (`identityCard`)"
+          }
+        ]
+      },
+      {
+        "tableName": "IngredientEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `stock` REAL NOT NULL, `unit` TEXT NOT NULL, `price` REAL NOT NULL, `imagePath` TEXT, `isAlive` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stock",
+            "columnName": "stock",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unit",
+            "columnName": "unit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "imagePath",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isAlive",
+            "columnName": "isAlive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "ProductEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `stock` REAL NOT NULL, `price` REAL NOT NULL, `imagePath` TEXT, `isAlive` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stock",
+            "columnName": "stock",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "imagePath",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isAlive",
+            "columnName": "isAlive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "RecipeEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idProduct` INTEGER NOT NULL, `idIngredient` INTEGER NOT NULL, `name` TEXT NOT NULL, `quantity` REAL NOT NULL, `price` REAL NOT NULL, PRIMARY KEY(`idIngredient`, `idProduct`))",
+        "fields": [
+          {
+            "fieldPath": "idProduct",
+            "columnName": "idProduct",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idIngredient",
+            "columnName": "idIngredient",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "idIngredient",
+            "idProduct"
+          ]
+        }
+      },
+      {
+        "tableName": "SaleEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `idClient` INTEGER NOT NULL, `totalPrice` REAL NOT NULL, `createDate` TEXT NOT NULL, `isAlive` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idClient",
+            "columnName": "idClient",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalPrice",
+            "columnName": "totalPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createDate",
+            "columnName": "createDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAlive",
+            "columnName": "isAlive",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "SaleLineEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `idSale` INTEGER NOT NULL, `idProduct` INTEGER NOT NULL, `productName` TEXT NOT NULL, `productStock` REAL NOT NULL, `singlePrice` REAL NOT NULL, `totalPrice` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idSale",
+            "columnName": "idSale",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idProduct",
+            "columnName": "idProduct",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productName",
+            "columnName": "productName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productStock",
+            "columnName": "productStock",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "singlePrice",
+            "columnName": "singlePrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalPrice",
+            "columnName": "totalPrice",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e9757706eefa9b21d8e6e3524843e2a')"
+    ]
+  }
+}
